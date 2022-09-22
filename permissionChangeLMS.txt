@@ -1,0 +1,249 @@
+courseLmsModule
+---------------
+using System.Collections.Generic;
+using Lx.Lms.Shared;
+using Lx.Lms.Shared.AccessControl;
+
+namespace Lx.Lms.Common.Core.Courses
+{
+    public class CourseLmsModule : LmsModuleBase, ICourseLmsModule
+    {
+        public override string ModuleName => "Core";
+        public override string ComponentName => "CourseManager";
+
+
+        public CourseLmsModule()
+        {
+
+        }
+
+        public override IEnumerable<PermisionDefinition> GetPermissions()
+        {
+            return Permissions;
+        }
+
+        public static List<PermisionDefinition> Permissions = new List<PermisionDefinition>
+        {
+            new PermisionDefinition
+            {
+                MultiTenancy = Abp.MultiTenancy.MultiTenancySides.Host,
+                ContextLevel = ContextLevelOptions.System,
+                PermissionName = StandardNames.PlatformPermissions.Courses_Management_All,
+                Roles = {
+                    { StandardNames.PlatformRoles.CourseCreator, PermissionOptions.Allow},
+                    { StandardNames.PlatformRoles.SuperAdmin, PermissionOptions.Allow},
+                }
+            },
+             new PermisionDefinition
+            {
+                MultiTenancy = Abp.MultiTenancy.MultiTenancySides.Host,
+                ContextLevel = ContextLevelOptions.System,
+                PermissionName = StandardNames.PlatformPermissions.Courses_Management_Reader,
+                Roles = {
+                    { StandardNames.PlatformRoles.HostUser, PermissionOptions.Allow},
+                    { StandardNames.PlatformRoles.EditingTeacher, PermissionOptions.Allow},
+                    { StandardNames.PlatformRoles.NonEditingTeacher, PermissionOptions.Allow},
+                }
+            },
+            new PermisionDefinition
+            {
+                MultiTenancy = Abp.MultiTenancy.MultiTenancySides.Host,
+                ContextLevel = ContextLevelOptions.System,
+                PermissionName = StandardNames.PlatformPermissions.Categories_Management_All,
+                Roles = {
+                    { StandardNames.PlatformRoles.CourseCreator, PermissionOptions.Allow},
+                    { StandardNames.PlatformRoles.SuperAdmin, PermissionOptions.Allow},
+                }
+            },
+             new PermisionDefinition
+            {
+                MultiTenancy = Abp.MultiTenancy.MultiTenancySides.Host,
+                ContextLevel = ContextLevelOptions.System,
+                PermissionName = StandardNames.PlatformPermissions.Categories_Management_Reader,
+                Roles = {
+                    { StandardNames.PlatformRoles.HostUser, PermissionOptions.Allow},
+                    { StandardNames.PlatformRoles.EditingTeacher, PermissionOptions.Allow},
+                    { StandardNames.PlatformRoles.NonEditingTeacher, PermissionOptions.Allow},
+                }
+            },
+            new PermisionDefinition
+            {
+                MultiTenancy = Abp.MultiTenancy.MultiTenancySides.Tenant,
+                ContextLevel = ContextLevelOptions.System,
+                PermissionName = StandardNames.PlatformPermissions.Tenant_User_Default,
+                Roles ={
+                    {StandardNames.PlatformRoles.TenantAdmin, PermissionOptions.Allow},
+                    {StandardNames.PlatformRoles.TenantUser,PermissionOptions.Allow },
+                    {StandardNames.PlatformRoles.TenantManager,PermissionOptions.Allow },
+                }
+            },
+            new PermisionDefinition
+            {
+                MultiTenancy =Abp.MultiTenancy.MultiTenancySides.Tenant,
+                ContextLevel =ContextLevelOptions.System,
+                PermissionName = StandardNames.PlatformPermissions.Enrolments_Management_All,
+                Roles =
+                {
+                    {StandardNames.PlatformRoles.TenantAdmin,PermissionOptions.Allow },
+                    {StandardNames.PlatformRoles.SuperAdmin,PermissionOptions.Allow },
+                    {StandardNames.PlatformRoles.HostTenantManager,PermissionOptions.Allow },
+                }
+            },
+             new PermisionDefinition
+            {
+                MultiTenancy = Abp.MultiTenancy.MultiTenancySides.Tenant,
+                ContextLevel = ContextLevelOptions.System,
+                PermissionName = StandardNames.PlatformPermissions.Tenant_Course_Manage_All,
+                Roles ={
+                    {StandardNames.PlatformRoles.TenantAdmin, PermissionOptions.Allow},
+                    {StandardNames.PlatformRoles.TenantManager, PermissionOptions.Allow },
+                }
+            }
+        };
+    }
+}
+
+____________________________________________________________________________________
+
+standardNames
+-------------
+using System.Collections.Generic;
+
+namespace Lx.Lms.Shared
+{
+    public static class StandardNames
+    {
+        public static class PlatformRoles
+        {
+            public const string SuperAdmin = "SuperAdmin"; // like: admin user(without roles) in moodle
+            public const string HostTenantManager = "HostTenantManager";
+            public const string HostUser = "HostUser";
+            public const string CourseCreator = "CourseCreator"; // like moodle
+            public const string NonEditingTeacher = "Teacher"; // like moodle
+            public const string EditingTeacher = "EditingTeacher"; // like moodle
+            public const string TenantAdmin = "TenantAdmin"; // not in moodle (just clarifying)
+            public const string TenantUser = "TenantUser";  // simillar to Student in Moodle?
+            public const string TenantManager = "TenantManager";
+            public const string Guest = "Guest"; // like moodle
+        }
+
+        public static class PlatformPermissions
+        {
+            public const string Courses_Management_All = "Courses.Management.All";
+            public const string Courses_Management_Reader = "Courses.Management.Reader";
+
+            public const string Categories_Management_All = "Categories.Management.All";
+            public const string Categories_Management_Reader = "Categories.Management.Reader";
+
+            public const string Enrolments_Management_All = "Enrolments.Management.All";
+            public const string Enrolments_Management_Reader = "Enrolments.Management.Reader";
+
+            public const string Course_Teacher_All = "Course.Teacher.All";
+            public const string Course_Teacher_Reader = "Course.Teacher.Reader";
+
+            public const string Tenant_User_Default = "Tenant.User.Default";
+            public const string Host_User_Default = "Host.User.Default";
+
+            public const string Tenant_Course_Manage_All = "Tenant.Course.ManageAll";
+
+            /// <summary>
+            /// Used during initial Seeding of the Database Only.
+            /// </summary>
+            public static Dictionary<string, List<string>> StandardHostRolePermissions;
+
+            /// <summary>
+            /// Used during initial Seeding of the Database Only.
+            /// </summary>
+            public static Dictionary<string, List<string>> StandardTenantRolePermissions;
+
+            static PlatformPermissions()
+            {
+                StandardHostRolePermissions = new Dictionary<string, List<string>>
+            {
+                {
+                    StandardNames.PlatformRoles.CourseCreator,
+                    new List<string>
+                    {
+                        Host_User_Default,
+                        Courses_Management_All,
+                        Categories_Management_All
+                    }
+                },
+                 {
+                    StandardNames.PlatformRoles.EditingTeacher,
+                    new List<string>
+                    {
+                        Host_User_Default,
+                        Enrolments_Management_All, // Should teacher be able to handle the enrolments ?
+                        Course_Teacher_All
+                    }
+                },
+                  {
+                    StandardNames.PlatformRoles.NonEditingTeacher,
+                    new List<string>
+                    {
+                        Host_User_Default,
+                        Enrolments_Management_Reader,
+                        Course_Teacher_Reader
+                    }
+                },
+                {
+                StandardNames.PlatformRoles.HostUser,
+                    new List<string>
+                    {
+                        Host_User_Default
+                    }
+                },
+                {
+                    StandardNames.PlatformRoles.HostTenantManager,
+                    new List<string>
+                    {
+                        Host_User_Default,
+                        Enrolments_Management_All,
+                    }
+                },
+                {
+                    StandardNames.PlatformRoles.SuperAdmin,
+                    new List<string>
+                    {
+                        Host_User_Default,
+                        Courses_Management_All,
+                        Categories_Management_All,
+                        Enrolments_Management_All,
+                        Course_Teacher_All,
+                    }
+                }
+            };
+
+                StandardTenantRolePermissions = new Dictionary<string, List<string>>
+            {
+                // Tenant
+                {
+                  StandardNames.PlatformRoles.TenantAdmin,
+                    new List<string>
+                    {
+                        Tenant_User_Default,
+                        Enrolments_Management_All,
+                    }
+                },
+                  {
+                    StandardNames.PlatformRoles.TenantUser,
+                    new List<string>
+                    {
+                        Tenant_User_Default
+                    }
+                },
+                  {
+                    StandardNames.PlatformRoles.TenantManager,
+                    new List<string>
+                    {
+                        Host_User_Default,
+                        Tenant_Course_Manage_All
+                    }
+                }
+            };
+            }
+
+        }
+    }
+}
